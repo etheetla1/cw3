@@ -16,6 +16,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   int hungerLevel = 50;
 
   Timer? _hungerTimer;
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   @override
   void dispose() {
     _hungerTimer?.cancel();
+    _nameController.dispose(); // Dispose the controller when the widget is disposed
     super.dispose();
   }
 
@@ -70,6 +72,12 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     }
   }
 
+  void _setName() {
+    setState(() {
+      petName = _nameController.text;
+    });
+  }
+
   Color _getPetColor() {
     if (happinessLevel > 70) {
       return Colors.green;
@@ -97,46 +105,64 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
         title: Text('Digital Pet'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Name: $petName',
-              style: TextStyle(fontSize: 20.0),
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              'Happiness Level: $happinessLevel',
-              style: TextStyle(fontSize: 20.0),
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              'Hunger Level: $hungerLevel',
-              style: TextStyle(fontSize: 20.0),
-            ),
-            SizedBox(height: 32.0),
-            Container(
-              width: 100,
-              height: 100,
-              color: _getPetColor(),
-              child: Center(
-                child: Text(
-                  _getPetMood(),
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Name: $petName',
+                style: TextStyle(fontSize: 20.0),
+              ),
+              SizedBox(height: 16.0),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: "Enter Pet Name",
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 32.0),
-            ElevatedButton(
-              onPressed: _playWithPet,
-              child: Text('Play with Your Pet'),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _feedPet,
-              child: Text('Feed Your Pet'),
-            ),
-          ],
+              SizedBox(height: 8.0),
+              ElevatedButton(
+                onPressed: _setName,
+                child: Text('Set Pet Name'),
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'Happiness Level: $happinessLevel',
+                style: TextStyle(fontSize: 20.0),
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'Hunger Level: $hungerLevel',
+                style: TextStyle(fontSize: 20.0),
+              ),
+              SizedBox(height: 32.0),
+              Container(
+                width: 100,
+                height: 100,
+                color: _getPetColor(),
+                child: Center(
+                  child: Text(
+                    _getPetMood(),
+                    style: TextStyle(fontSize: 18.0, color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(height: 32.0),
+              ElevatedButton(
+                onPressed: _playWithPet,
+                child: Text('Play with Your Pet'),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _feedPet,
+                child: Text('Feed Your Pet'),
+              ),
+            ],
+          ),
         ),
       ),
     );
