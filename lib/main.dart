@@ -16,7 +16,9 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   int hungerLevel = 50;
 
   Timer? _hungerTimer;
+  Timer? _winTimer;
   final TextEditingController _nameController = TextEditingController();
+  bool _winConditionMet = false;
 
   @override
   void initState() {
@@ -27,17 +29,19 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   @override
   void dispose() {
     _hungerTimer?.cancel();
+    _winTimer?.cancel();
     _nameController.dispose(); // Dispose the controller when the widget is disposed
     super.dispose();
   }
 
   void _startHungerTimer() {
-    _hungerTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _hungerTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         hungerLevel = (hungerLevel + 5).clamp(0, 100);
         if (hungerLevel == 100) {
           happinessLevel = (happinessLevel - 20).clamp(0, 100);
         }
+        _checkLossCondition();
       });
     });
   }
@@ -62,6 +66,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     } else {
       happinessLevel = (happinessLevel + 10).clamp(0, 100);
     }
+    _checkWinCondition();
   }
 
   void _updateHunger() {
@@ -70,12 +75,59 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
       hungerLevel = 100;
       happinessLevel = (happinessLevel - 20).clamp(0, 100);
     }
+    _checkLossCondition();
+  }
+
+  void _checkWinCondition() {
+    if (happinessLevel > 80) {
+      _winTimer?.cancel();
+      _winTimer = Timer(Duration(seconds: 5), () {
+        setState(() {
+          _winConditionMet = true;
+        });
+        _showMessage('You Win! Your pet is very happy.');
+      });
+    } else {
+      _winTimer?.cancel();
+    }
+  }
+
+  void _checkLossCondition() {
+    if (hungerLevel == 100 && happinessLevel <= 10) {
+      _showMessage('Game Over! Your pet is too hungry and unhappy.');
+      _resetGame();
+    }
   }
 
   void _setName() {
     setState(() {
       petName = _nameController.text;
     });
+  }
+
+  void _resetGame() {
+    setState(() {
+      hungerLevel = 50;
+      happinessLevel = 50;
+      _winConditionMet = false;
+    });
+  }
+
+  void _showMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(message),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   Color _getPetColor() {
