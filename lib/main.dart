@@ -15,7 +15,6 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   int happinessLevel = 50;
   int hungerLevel = 50;
 
-  // Add Timer for automatic hunger increase
   Timer? _hungerTimer;
 
   @override
@@ -26,7 +25,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
 
   @override
   void dispose() {
-    _hungerTimer?.cancel(); // Cancel timer when widget is disposed
+    _hungerTimer?.cancel();
     super.dispose();
   }
 
@@ -73,11 +72,11 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
 
   Color _getPetColor() {
     if (happinessLevel > 70) {
-      return Colors.green; // Happy
+      return Colors.green;
     } else if (happinessLevel >= 30) {
       return Colors.yellow; // Neutral
     } else {
-      return Colors.red; // Unhappy
+      return Colors.red;
     }
   }
 
